@@ -5,31 +5,79 @@
 using namespace php;
 using namespace std;
 
-const char* const DICT_PATH = "../dict/jieba.dict.utf8";
-const char* const HMM_PATH = "../dict/hmm_model.utf8";
-const char* const USER_DICT_PATH = "../dict/user.dict.utf8";
-const char* const IDF_PATH = "../dict/idf.utf8";
-const char* const STOP_WORD_PATH = "../dict/stop_words.utf8";
+struct PHPJiebaObject
+{
+    cppjieba::Jieba* jieba;
+};
 
-cppjieba::Jieba jieba(DICT_PATH,
-    HMM_PATH,
-    USER_DICT_PATH,
-    IDF_PATH,
-    STOP_WORD_PATH);
+#define RESOURCE_NAME  "PHPJieba"
+#define PROPERTY_NAME  "ptr"
 
-PHPX_FUNCTION(jieba_hello)
+static void PHPJiebaObjectResDtor(zend_resource *res)
+{
+    PHPJiebaObject *jb = static_cast<PHPJiebaObject *>(res->ptr);
+//    efree(jb->jieba);
+    efree(jb);
+}
+
+PHPX_METHOD(PHPJieba, __construct)
+{
+    string dict = args[0].toString();
+    string hmm = args[1].toString();
+    string user_dict = args[2].toString();
+    string idf = args[3].toString();
+    string stop_word = args[4].toString();
+
+    PHPJiebaObject *object = (PHPJiebaObject *)emalloc(sizeof(PHPJiebaObject));
+    cppjieba::Jieba jieba(dict, hmm, user_dict, idf, stop_word);
+    object->jieba = &jieba;
+
+    _this.oSet(PROPERTY_NAME, RESOURCE_NAME, object);
+}
+
+PHPX_METHOD(PHPJieba, cut)
 {
     vector<string> words;
     string s;
+    bool hmm = true;
+
     s = args[0].toString();
-    jieba.Cut(s, words, true);
+    if(args.count() > 1){
+        hmm = args[1].toBool();
+    }
 
-    Array arr(retval);
+    PHPJiebaObject *object = _this.oGet<PHPJiebaObject>(PROPERTY_NAME, RESOURCE_NAME);
 
-	for (int i = 0; i < words.size(); ++i)
-	{
-	    arr.append(words[i]);
-	}
+    object->jieba->Cut(s, words, hmm);
+//    for (int i = 0; i < words.size(); ++i)
+//    {
+//        cout << words[i] << endl;
+//    }
+//    jieba->Cut(s, words, hmm);
+//    object->jieba->Cut(s, words, hmm);
+//
+//    Array arr(retval);
+//
+//    for (int i = 0; i < words.size(); ++i)
+//    {
+//        arr.append(words[i]);
+//    }
+}
+
+PHPX_FUNCTION(jieba_hello)
+{
+    retval = "Hello World";
+//    vector<string> words;
+//    string s;
+//    s = args[0].toString();
+//    jieba.Cut(s, words, true);
+//
+//    Array arr(retval);
+//
+//	for (int i = 0; i < words.size(); ++i)
+//	{
+//	    arr.append(words[i]);
+//	}
 }
 
 PHPX_EXTENSION()
@@ -38,6 +86,12 @@ PHPX_EXTENSION()
 
     extension->onStart = [extension]() noexcept {
         extension->registerConstant("JIEBA_VERSION", 10001);
+
+        Class *c = new Class("PHPJieba");
+        c->addMethod(PHPX_ME(PHPJieba, __construct), CONSTRUCT);
+        c->addMethod(PHPX_ME(PHPJieba, cut), PUBLIC);
+        extension->registerClass(c);
+        extension->registerResource(RESOURCE_NAME, PHPJiebaObjectResDtor);
     };
 
     //extension->onShutdown = [extension]() noexcept {

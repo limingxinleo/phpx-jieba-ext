@@ -82,10 +82,10 @@ PHPX_METHOD(PHPJieba, insertUserWord)
 
 PHPX_EXTENSION()
 {
-    Extension *extension = new Extension("jieba", "0.0.4");
+    Extension *extension = new Extension("jieba", "1.0.0");
 
     extension->onStart = [extension]() {
-        extension->registerConstant("JIEBA_VERSION", 10001);
+        extension->registerConstant("JIEBA_VERSION", 10000);
 
         Class *c = new Class("PHPJieba");
         c->addMethod(PHPX_ME(PHPJieba, cut), STATIC);

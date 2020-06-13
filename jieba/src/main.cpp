@@ -82,7 +82,7 @@ PHPX_METHOD(PHPJieba, insertUserWord)
 
 PHPX_EXTENSION()
 {
-    Extension *extension = new Extension("jieba", "0.0.1");
+    Extension *extension = new Extension("jieba", "0.0.3");
 
     extension->onStart = [extension]() {
         extension->registerConstant("JIEBA_VERSION", 10001);
@@ -101,7 +101,6 @@ PHPX_EXTENSION()
                         {"author", "limingxinleo <l@hyperf.io>"},
                         {"date", "2020-06-13"},
                     });
-    extension->addIniEntry("jieba.dict", "/usr/local/phpx/jieba/dict");
 
     return extension;
 }

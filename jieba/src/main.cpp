@@ -7,7 +7,6 @@ using namespace std;
 
 struct PHPJiebaObject
 {
-    int id;
     cppjieba::Jieba* jieba;
 };
 
@@ -31,7 +30,6 @@ PHPX_METHOD(PHPJieba, __construct)
 
     PHPJiebaObject *object = (PHPJiebaObject *)emalloc(sizeof(PHPJiebaObject));
     cppjieba::Jieba jieba(dict, hmm, user_dict, idf, stop_word);
-    object->id = 1;
     object->jieba = &jieba;
 
     vector<string> words;
@@ -41,8 +39,8 @@ PHPX_METHOD(PHPJieba, __construct)
         cout << words[i] << endl;
     }
 
-    _this.store(object);
-//    _this.oSet(PROPERTY_NAME, RESOURCE_NAME, object);
+    _this.oSet(PROPERTY_NAME, RESOURCE_NAME, object);
+    // _this.store(object);
 }
 
 PHPX_METHOD(PHPJieba, cut)
@@ -56,10 +54,9 @@ PHPX_METHOD(PHPJieba, cut)
         hmm = args[1].toBool();
     }
 
-//    PHPJiebaObject *object = _this.oGet<PHPJiebaObject>(PROPERTY_NAME, RESOURCE_NAME);
-    PHPJiebaObject *object = _this.fetch<PHPJiebaObject>();
+    PHPJiebaObject *object = _this.oGet<PHPJiebaObject>(PROPERTY_NAME, RESOURCE_NAME);
+    // PHPJiebaObject *object = _this.fetch<PHPJiebaObject>();
 
-    cout << object->id << endl;
     object->jieba->Cut(s, words, hmm);
 //    for (int i = 0; i < words.size(); ++i)
 //    {

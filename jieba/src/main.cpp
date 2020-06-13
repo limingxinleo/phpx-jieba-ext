@@ -5,7 +5,8 @@
 using namespace php;
 using namespace std;
 
-string dict = "/Users/limx/Applications/GitHub/limingxinleo/phpx-jieba-ext/dict";
+//string dict = "/Users/limx/Applications/GitHub/limingxinleo/phpx-jieba-ext/dict";
+string dict = "/usr/local/phpx/jieba/dict";
 cppjieba::Jieba jieba(
     dict + "/jieba.dict.utf8",
     dict + "/hmm_model.utf8",

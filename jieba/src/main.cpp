@@ -32,6 +32,13 @@ PHPX_METHOD(PHPJieba, __construct)
     cppjieba::Jieba jieba(dict, hmm, user_dict, idf, stop_word);
     object->jieba = &jieba;
 
+    vector<string> words;
+    object->jieba->Cut("上海公园吃炸鸡", words, true);
+    for (int i = 0; i < words.size(); ++i)
+    {
+        cout << words[i] << endl;
+    }
+
     _this.oSet(PROPERTY_NAME, RESOURCE_NAME, object);
 }
 
